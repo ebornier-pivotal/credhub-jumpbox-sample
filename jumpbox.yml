@@ -1,0 +1,40 @@
+director_uuid: 7dbd49f9-1b23-4083-a1a5-0d2f2c0747f6
+
+name: jumpbox
+
+releases:
+  - name: networking                                # +
+    version: latest                                 # +
+  - name: jumpbox                                # +
+    version: latest                                 # +
+
+
+stemcells:
+- alias: bosh-openstack-kvm-ubuntu-trusty-go_agent-raw
+  os: ubuntu-trusty
+  version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 10
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000
+
+instance_groups:
+  - name: dual_nat
+    jobs:
+     - name: jumpbox
+       release: jumpbox
+       properties:
+         jumpbox:
+           hostname: ((hostname))
+    ssh_keys:
+     - ((jumpbox-key.public_key))
+
+    vm_type: t2.medium
+    stemcell: bosh-openstack-kvm-ubuntu-trusty-go_agent-raw
+    networks:
+    - name: net
+    instances: 1
+    azs:
+    - eu-west-1a
